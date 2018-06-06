@@ -1,11 +1,11 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var { ObjectID } = require('mongodb');
-var _ = require('lodash');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
-var { mongoose } = require('./db/mongoose');
-var { Todo } = require('./models/todo');
-var { User } = require('./models/user');
+var {mongoose} = require('./db/mongoose');
+var {Todo} = require('./models/todo');
+var {User} = require('./models/user');
 
 var app = express();
 const port = process.env.PORT || 3000;
@@ -26,7 +26,7 @@ app.post('/todos', (req, res) => {
 
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
-    res.send({ todos });
+    res.send({todos});
   }, (e) => {
     res.status(400).send(e);
   });
@@ -44,7 +44,7 @@ app.get('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
 
-    res.send({ todo });
+    res.send({todo});
   }).catch((e) => {
     res.status(400).send();
   });
@@ -62,39 +62,40 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
 
-    res.send({ todo });
-  }, (e) => res.status(400).send());
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  });
 });
 
 app.patch('/todos/:id', (req, res) => {
-  var id = req.params.id;   //getting the id
-  var body = _.pick(req.body, ['text', 'completed']);//we define body as a subset of the things that the user will pass to us
-  //we dont want the user to be able to change all the fields in that object  
+  var id = req.params.id;
+  var body = _.pick(req.body, ['text', 'completed']);
 
-  if (!ObjectID.isValid(id)) {  // checking if the id is valid
+  if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
 
-  if (_.isBoolean(body.completed) && body.completed) {//update the completedAt property based on the completed property
-
+  if (_.isBoolean(body.completed) && body.completed) {
     body.completedAt = new Date().getTime();
-
   } else {
     body.completed = false;
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {//its like what we wrote in mongoDb-update file and we replaced returnOriginal = false with new =true
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
     if (!todo) {
       return res.status(404).send();
     }
 
     res.send({todo});
-  }, (e) => res.status(400).send());
+  }).catch((e) => {
+    res.status(400).send();
+  })
 });
 
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
 });
 
-module.exports = { app };
+module.exports = {app};
