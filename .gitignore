@@ -1,4 +1,3 @@
-# model
 node_modules/
-# json
 package-lock.json
+server/config/config.json
