@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const { ObjectID } = require('mongodb')
 
 
-const userTowOneId = new ObjectID();
+const userTwoId = new ObjectID();
 const userOneId = new ObjectID();
 const users = [{
   _id: userOneId,
@@ -17,19 +17,25 @@ const users = [{
     token: jwt.sign({ _id: userOneId, access: 'auth' }, 'secret').toString()
   }]
 }, {
-  _id: userTowOneId,
+  _id: userTwoId,
   email: 'mohammad@exmple.com',
-  password: 'Two123456abc'
+  password: 'Two123456abc',
+  tokens: [{
+    access: 'auth',
+    token: jwt.sign({ _id: userTwoId, access: 'auth' }, 'secret').toString()
+  }]
 }];
 
 const todos = [{
   _id: new ObjectID(),
-  text: 'First test todo'
+  text: 'First test todo',
+  _creator : userOneId
 }, {
   _id: new ObjectID(),
   text: 'Second test todo',
   completed: true,
-  completedAt: 333
+  completedAt: 333,
+  _creator : userTwoId
 }];
 
 const populateTodos = (done) => {
